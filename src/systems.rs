@@ -81,8 +81,11 @@ where
 
 /// Takes care of synchronizing a state between Bevy and a Leptos signal
 #[cfg(feature = "bevy_state")]
-pub fn sync_signal_state<D, S>(mut state: ResMut<State<S>>, sync: Res<D>)
-where
+pub fn sync_signal_state<D, S>(
+    mut state: ResMut<State<S>>,
+    sync: Res<D>,
+    mut next_state: ResMut<NextState<S>>,
+) where
     S: bevy::state::state::FreelyMutableState + Clone,
     D: HasReceiver<S> + HasSender<S> + Resource,
 {
@@ -91,7 +94,8 @@ where
     }
 
     for event in sync.rx().try_iter() {
-        *state = State::new(event);
+        // *state = State::new(event);
+        next_state.set(event);
     }
 }
 
